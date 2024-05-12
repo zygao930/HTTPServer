@@ -1,13 +1,10 @@
 package com.codefromscratch.httpserver.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import com.fasterxml.jackson.databind.*;
 import java.io.IOException;
 
-public class json {
+public class Json {
     private static ObjectMapper myObjectMapper = new ObjectMapper();
 
     public static ObjectMapper defaultObjectMapper() {
@@ -16,7 +13,7 @@ public class json {
         return om;
     }
 
-    public JsonNode parse(String jsonSrc) throws IOException {
+    public static JsonNode parse(String jsonSrc) throws IOException {
         return myObjectMapper.readTree(jsonSrc);
     }
 
@@ -28,5 +25,19 @@ public class json {
         return myObjectMapper.valueToTree(obj);
     }
 
+    public String stringify(JsonNode node) throws JsonProcessingException {
+        return generateJson(node, false);
+    }
 
+    public String stringifyBool(JsonNode node) throws JsonProcessingException {
+        return generateJson(node, true);
+    }
+
+    public String generateJson(Object o, boolean bool) throws JsonProcessingException {
+        ObjectWriter objectWriter = myObjectMapper.writer();
+        if(bool){
+            objectWriter = objectWriter.with(SerializationFeature.INDENT_OUTPUT);
+        }
+        return objectWriter.writeValueAsString(o);
+    }
 }
